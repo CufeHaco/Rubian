@@ -1,0 +1,73 @@
+#!/usr/bin/env ruby
+require 'io/console'
+require 'open3'
+require 'colorize'
+require 'readline'
+require_relative './commands.rb'
+require_relative './Rubian.rb'
+
+module Rubian_core
+include Rubian_cmd
+
+
+
+	def pwd
+		Dir.pwd
+	end
+
+
+	def prompt 
+			if $sudo.running? == true 
+			"#{pwd}==> ".red
+				else
+			"#{pwd}==> ".green
+			end
+					
+	end
+ 
+ end
+
+ 
+ include Rubian_core
+	bnd = TOPLEVEL_BINDING
+	
+		stty_save = `stty -g`.chomp
+		
+		
+		
+trap("INT") {system"stty", stty_save  ; exec'clear ; ruby /home/$USER/Rubian/lib/shell'}  
+
+	 
+	while input = Readline.readline("#{Rubian_core.prompt}", true)
+          
+		begin
+
+			result = bnd.eval(input) 
+			
+			 ("#{result} \n") ; STDOUT.flush
+ 
+		rescue  => e  
+			puts e.message
+ 
+		rescue SyntaxError => e
+			puts e.message
+ 
+		rescue LoadError => e
+			puts e.message
+	   
+	   rescue SignalException => e
+	   
+			puts e.message
+			
+	   rescue Exception => e
+	   puts e.message
+				
+			end
+		end
+	
+
+
+
+
+
+
